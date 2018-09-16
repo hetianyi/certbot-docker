@@ -17,5 +17,5 @@ docker hub: [https://hub.docker.com/r/hehety/certbot-docker/](https://hub.docker
 docker run -p 80:80 -p 443:443 -v /tmp/cert:/output hehety/certbot-docker --email xxx@xxx.com --domain xxx.com
 ```
 注意：
-> 证书生成全程需要联网，并且需要容器映射宿主机的80和443端口用于证书服务器进行身份验证。
-> 运行的容器所在机器必须和证书绑定的域名进行绑定
+> - 证书生成全程需要联网，并且需要容器映射宿主机的80和443端口用于证书服务器进行身份验证。
+> - 运行的容器所在机器必须和证书绑定的域名进行绑定
