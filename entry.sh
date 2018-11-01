@@ -1,16 +1,21 @@
 #!/bin/bash
 
-echo "" > /etc/apt/sources.list
+process() {
+    echo ""
+    echo "+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~+"
+    echo "ERR: $1"
+    echo "+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~+"
+    echo ""
+}
 
-echo "deb http://mirrors.aliyun.com/debian/ stretch main non-free contrib" >> /etc/apt/sources.list
-echo "deb-src http://mirrors.aliyun.com/debian/ stretch main non-free contrib" >> /etc/apt/sources.list
-echo "deb http://mirrors.aliyun.com/debian-security stretch/updates main" >> /etc/apt/sources.list
-echo "deb-src http://mirrors.aliyun.com/debian-security stretch/updates main" >> /etc/apt/sources.list
-echo "deb http://mirrors.aliyun.com/debian/ stretch-updates main non-free contrib" >> /etc/apt/sources.list
-echo "deb-src http://mirrors.aliyun.com/debian/ stretch-updates main non-free contrib" >> /etc/apt/sources.list
-echo "deb http://mirrors.aliyun.com/debian/ stretch-backports main non-free contrib" >> /etc/apt/sources.list
-echo "deb-src http://mirrors.aliyun.com/debian/ stretch-backports main non-free contrib" >> /etc/apt/sources.list
-
+checkStatus() {
+    exit_code=$1
+    if [ $exit_code != 0 ]
+    then
+        echo "ERROR: $exit_code"
+        exit $exit_code
+    fi
+}
 
 temp=`getopt -o e:d:: -l email:,domain: \
      -n 'example.bash' -- "$@"`
@@ -39,21 +44,20 @@ done
 
 
 if [ $email = "" ]; then
-    echo "err: email cannot be empty!"
+    process "email cannot be empty!"
     exit 1
 fi
 
 if [ $domain = "" ]; then
-    echo "err: domain cannot be empty!"
+    process "domain cannot be empty!"
     exit 1
 fi
 
 
-apt-get update && apt-get install wget -y && \
-wget https://dl.eff.org/certbot-auto && \
-chmod a+x certbot-auto && \
-./certbot-auto -n --install-only && \
-./certbot-auto --standalone -n certonly -d $domain --email=$email --agree-tos && \
+
+./certbot-auto --standalone -n certonly -d $domain --email=$email --agree-tos
+checkStatus $?
+
 cd /etc/letsencrypt/live && /bin/cp -rfL * /output && \
 echo ""
 echo "+------+"
